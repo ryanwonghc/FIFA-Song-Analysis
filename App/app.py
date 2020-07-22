@@ -10,7 +10,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 from plotly.subplots import make_subplots
 
-df = pd.read_csv('Notebooks/fifa_spotify_data_cleaned')
+df = pd.read_csv('../Notebooks/fifa_spotify_data_cleaned.csv')
 
 # ------------------------------- Cleaning -------------------------------
 df['album_release_date'] = df['album_release_date'].astype('datetime64')
