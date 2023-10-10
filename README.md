@@ -157,3 +157,8 @@ Key represents the key a track is in, which consists of notes from A to G. Data 
 </p>
 
 The chart above illustrates what proportion of the playlist each year was written in each key. These lines are all lines of best fit, to illustrate the trend of key usage over time rather than to identify the exact proportions for each year. From the chart, we see that the "G" key has halved in prominence. Interestingly, while "C", "D", "A", and "G" are the most widely used keys in absolute terms, they are not the most commonly used in proportional terms. The period between 2018 and 2020 seemed to have the most even distribution in terms of key selection, especially if you ignore D#/Eb which has consistently low usage.
+
+
+#### Ideas for Future Work
+- Multi label classification problem: given a song, classify which FIFA playlist it belongs to
+    - maybe instead of each year, classify by decade/ half a decade: years close to each other are quite similar
