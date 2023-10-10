@@ -12,6 +12,7 @@ jupyter = "*"
 spotipy = "*"
 seaborn = "*"
 wordcloud = "*"
+kmodes = "*"
 
 [dev-packages]
 

@@ -1,10 +1,10 @@
-# FIFA-Song-Predictions
+# FIFA-Song-Analysis
 ## Overview
 [Link to Github Repository](https://github.com/ryanwonghc/FIFA-Song-Predictions)
 
 From Bakermat to John Newman, EA Sport's FIFA games have introduced me to countless new artists and iconic songs across genres that have come to define my childhood. Ask any avid FIFA player, and they will likely tell you the same. FIFA soundtracks hold a unique significance in the realm of sports and entertainment- they offer a glimpse into the collective music trends and tastes of a global community.  
 
-FIFA soundtracks have become as popular as the game itself and are a great way to discover new artists and songs. However, the soundtrack is only released once a year and this is not nearly frequent enough to scratch my itch for new music. In response to this, the goal of this project is to try to identify the selection criteria for FIFA soundtracks and predict what songs future FIFA playlists might contain.
+This project aims to identify the music selection criteria for songs in FIFA playlists and how this criteria has evolved over time. 
 
 #### Tools/Libraries Used
 - Python: Spotipy, Pandas, NumPy, Matplotlib, Seaborn
@@ -92,16 +92,68 @@ This suggests that on average, the older the songs are, the less popular they ge
 
 #### Artist Data
 
+I elected to look at artist follower count over artist popularity score to determine artist popularity because I am making the assumption that people only choose to follow an artist if they are interested in their music. In contrast, since the artist's popularity score is calculated using the popularity scores of their music, an artist's popularity score can be temporarily inflated by their song being selected to appear in the FIFA playlist as it will receive more plays. 
 
+<p align="center">
+    <img src="charts/artist_followers_bar.png"><br>
+    <i>Artist Follower Count Distribution (Logarithmic Scale)</i>
+</p>
 
-only one song per artist
+In the above chart, we see that in the earlier years (2014-2018), distribution of artist follower count was more left skewed, meaning there was an emphasis on selecting songs from more heavily followed artists. Nowadays, there is more representation from artists with different sized followings. In more recent years, FIFA has starting including artists with smaller followings (follower count < 1000), though it is still a small proportion of the playlist.
 
-assume that people only follow artist if they are really into them, so not as heavily influenced by being on fifa playlist as like play count or popularity
+According to [Chartmasters](https://chartmasters.org/spotify-most-followed-artists/), the 100th most followed artist on Spotify is 2pac with a follower count of 16,362,807. Given that FIFA is such a mainstream game, I assumed they would pick mainstream music. However, top 100 artists only make up 1.5% of the playlist. Going a step down, artists with 1M+ followers only make up 25% of the playlist (75th percentile). This is illustrated in the chart below:
 
+<p align="center">
+    <img src="charts/artist_followers_step.png"><br>
+</p>
 
-k means/ k mode to cluster into different categories, then find x songs that would fit in each category
-diverse so cannot group together
-30-40 songs total
-
+From the chart, we can also see the 25th percentile for follower count is around 50,000.
 
 #### Audio Data
+
+Spotify's audio data consists of 12 different audio features measuring factors such as a song's energy, instrumentalness, and key. See Spotify's [API reference page](https://developer.spotify.com/documentation/web-api/reference/get-audio-features) for how to interpret audio data. I used the findings in [this website](https://dkhurjekar.shinyapps.io/spotify/) and correlated [article]((https://dhruv-khurjekar.medium.com/investigating-spotifys-danceability-index-other-song-attributes-1983142f7dfd)), which contained analyses on the distributions of each of the audio features, to serve as a baseline to compare FIFA playlist audio features to.  
+
+<p align="center">
+    <img src="charts/audio_radar.png"><br>
+</p>
+
+
+In the chart above, we can see that over the years, FIFA is fairly consistent with song selection. There isn't too much deviation in most features- the biggest variations I can see are in mode, danceability, and energy. The following charts allow us to get a clearer understanding of how FIFA's selection of songs evolve over time.
+
+<p align="center">
+    <img src="charts/audio_line.png"><br>
+</p>
+
+**Mode**
+This variable measures the modality (major or minor) of the track, with 1 being major and 0 being minor. We see that there has been a fairly large deviation in EA Sport's propensity to select songs in major or minor key over the year, with no obvious trend year over year (this is more clear in the chart below). This shows the diversity in music selection. Almost every year though has an average score > 0.5, indicating that there is a larger selection of songs in a major key. This may be because major scales and chord progressions do a better job of relating happy or up-beat emotions.
+
+**Energy**
+Compared to the median energy score of 0.465, we see that FIFA songs are typically extremely energetic (1.5-2x the score on average). This may be because associating high energy music with your game gives gamers more energy when playing the game, which is a positive. We do see though that energy scores are trending down over time, which make sense given the shift from genres such as House to genres such as Indie. 
+
+**Danceability, Tempo**
+Similar to the Energy section above, we see Tempo trending downwards but still largely above the median (115). Interestingly, it seems that danceability is trending in the opposite direction. Given that tempo plays a role in danceability, the data seems to suggest that music with tempo too high may not be danceable to, and that ~110-120bpm may be the sweet spot danceability. From the data, it is clear that FIFA is prioritizing music with high danceability. The average of 0.72 for a danceability score is greatly above the median of 0.55. 
+
+**Acousticness, Liveness**
+The data indicates that songs are neither acoustic nor live recordings. This makes sense, as most if not all tracks are studio recorded and professionally produced before making it onto the FIFA playlist.
+
+**Valence**
+Valence describes the "positiveness" of a song: whether it leaves the user feeling happy or sad. The score skew slightly higher than neutral (score of 0.5) but it does not appear that EA Sports has a strong preference for selecting "happy" music. We see the score spikes up in 2021, matching the high danceability score for the same year.
+
+**Speechiness**
+Speechiness was interesting to interpret because my initial thought was that these values seemed way too low. From Spotify's documentation, Speechiness should be in the range [0.66,1] for spoken word tracks such as podcasts, [0.33,0.66] for tracks that contain music and speech, either in sections or layered, and [0,0.33] for music heavy tracks. Given that anecdotally most if not all songs on the playlist contain words, the fact that the average scores were all in the [0.06,0.15] range every year surprised me. Nevertheless, this seems to suggest that FIFA prioritizes fairly melodic/ music heavy tracks with few or simple lyrics. We see the score is quite high in 2020, and this is due to the selection of a few rap heavy tracks such as "Unemployed", "Where Do I Begin", and "Where & When". For these songs, there are notably a few sections where the artist is not rapping over a beat, leading to a high speechiness score. 
+
+**Instrumentalness**
+Instrumentalness represents how music heavy (or vocal-less) a track is. At first glance, instrumentalness scores seem to contradict the conclusions made in the previous section, as the scores are quite low (~0.1 on a [0,1] scale). However, consulting historical distribution data, we see that the median instrumentalness score is 0.0005, which is one order of magnitude lower than the averages we see.
+
+
+**Key**
+<p align="center">
+    <img src="charts/key_bar.png"><br>
+</p>
+Key represents the key a track is in, which consists of notes from A to G. Data about the song's key was not included in the charts above because it is categorical data that cannot be interpreted via averages. In the bar chart above, we see that the natural keys (not sharps or flats) are more prominently featured in the playlist. This reflects musical trends, according to this [website](https://www.hooktheory.com/cheat-sheet/key-popularity). "C","D", "A", and "G" are the most popular keys to write songs in- more than a third of all songs are written in these keys.
+
+<p align="center">
+    <img src="charts/key_line_reg.png">
+</p>
+
+The chart above illustrates what proportion of the playlist each year was written in each key. These lines are all lines of best fit, to illustrate the trend of key usage over time rather than to identify the exact proportions for each year. From the chart, we see that the "G" key has halved in prominence. Interestingly, while "C", "D", "A", and "G" are the most widely used keys in absolute terms, they are not the most commonly used in proportional terms. The period between 2018 and 2020 seemed to have the most even distribution in terms of key selection, especially if you ignore D#/Eb which has consistently low usage.
